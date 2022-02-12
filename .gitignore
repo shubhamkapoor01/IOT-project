@@ -24,10 +24,10 @@ yarn-debug.log*
 yarn-error.log*
 
 node_modules
-.env
 coverage
 coverage.json
 typechain
+.env
 
 #Hardhat files
 cache
