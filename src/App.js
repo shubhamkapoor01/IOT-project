@@ -1,23 +1,19 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react'
+import { ethers } from 'ethers';
+import Lock from './artifacts/contracts/Lock.sol/Lock.json';
 import './App.css';
 
 function App() {
+  const [userAccount, setUserAccount] = useState('');
+  const lock = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
+
+  useEffect(() => {
+    console.log(lock);
+  })
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
     </div>
   );
 }
