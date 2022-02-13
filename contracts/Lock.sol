@@ -8,9 +8,22 @@ contract Lock is ERC721 {
 
     }
 
+    mapping (address => uint[]) allowedOfPerson;
     mapping (address => uint[]) productsOfPerson;
     mapping (uint => Product) productNft;
     uint productIdCount = 0;
+
+    /*  creates a new product and appends it to list of global products along with information about 
+        the product ie name, description, owner address and initially no one is allowed to use it. */
+    function addProduct(string memory name, string memory description) public {
+        address[] memory empty;
+        Product memory product = Product(name, description, msg.sender, empty, productIdCount);
+        _mint(msg.sender, productIdCount);
+        productNft[productIdCount] = product;
+        productsOfPerson[msg.sender].push(productIdCount);
+        grantPermission(productIdCount, msg.sender);
+        productIdCount ++;
+    }
 
     /*  creates a new product and appends it to list of global products along with information about 
         the product ie name, description, owner address and address of who all are allowed to use it. */
@@ -19,6 +32,10 @@ contract Lock is ERC721 {
         _mint(msg.sender, productIdCount);
         productNft[productIdCount] = product;
         productsOfPerson[msg.sender].push(productIdCount);
+        grantPermission(productIdCount, msg.sender);
+        for (uint i = 0; i < allowed.length; i ++) {
+            allowedOfPerson[allowed[i]].push(productIdCount);
+        }
         productIdCount ++;
     }
 
@@ -38,12 +55,33 @@ contract Lock is ERC721 {
         return false;
     }
 
+    /* the user is allowed to view all the permissions they have been granted */
+    function myPermissions() public view returns (Product[] memory) {
+        Product[] memory iCanUse = new Product[](allowedOfPerson[msg.sender].length);
+        for (uint i = 0; i < allowedOfPerson[msg.sender].length; i ++) {
+            Product memory currProduct = productNft[allowedOfPerson[msg.sender][i]];
+            iCanUse[i] = currProduct;
+        }
+        return iCanUse;
+    }
+
+    /* the user is allowed to view all the products that they own */
+    function myProducts() public view returns (Product[] memory) {
+        Product[] memory iOwn = new Product[](productsOfPerson[msg.sender].length);
+        for (uint i = 0; i < productsOfPerson[msg.sender].length; i ++) {
+            Product memory currProduct = productNft[productsOfPerson[msg.sender][i]];
+            iOwn[i] = currProduct;
+        }
+        return iOwn;
+    }
+
     /* the owner is allowed to give usage rights of the product to another user */
     function grantPermission(uint productId, address userToGrantPermission) public {
         if (!checkOwner(productId)) {
             return;
         }
 
+        allowedOfPerson[userToGrantPermission].push(productId);
         productNft[productId].allowedToUse.push(userToGrantPermission);
     }
 
@@ -60,6 +98,17 @@ contract Lock is ERC721 {
                     i ++;
                 }
                 delete productNft[productId].allowedToUse[productNft[productId].allowedToUse.length - 1];
+                break;
+            }
+        }
+
+        for (uint i = 0; i < allowedOfPerson[userToRevokePermission].length; i ++) {
+            if (productId == allowedOfPerson[userToRevokePermission][i]) {
+                while (i < allowedOfPerson[userToRevokePermission].length - 1) {
+                    allowedOfPerson[userToRevokePermission][i] = allowedOfPerson[userToRevokePermission][i + 1];
+                    i ++;
+                }
+                delete allowedOfPerson[userToRevokePermission][allowedOfPerson[userToRevokePermission].length - 1];
                 break;
             }
         }
