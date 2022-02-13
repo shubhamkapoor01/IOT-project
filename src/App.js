@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ethers } from 'ethers';
-import Lock from './artifacts/contracts/Lock.sol/Lock.json';
+// import Lock from './artifacts/contracts/Lock.sol/Lock.json';
 import QrReader from 'react-qr-reader';
 import './App.css';
 
