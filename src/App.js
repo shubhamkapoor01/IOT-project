@@ -8,19 +8,25 @@ const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
 function App() {
   const [allowed, setAllowed] = useState([]);
   const [owned, setOwned] = useState([]);
+  const [productName, setProductName] = useState(''); 
+  const [productDescription, setProductDescription] = useState('');
 
   useEffect(() => {
+    requestAccount();
     getAllowed();
     getOwned();
   }, []);
+
+  const requestAccount = async () => {
+    await window.ethereum.request({method: 'eth_requestAccounts'})
+  }
 
   const getAllowed = async () => {
     const [account] = await window.ethereum.request({method: 'eth_requestAccounts'});
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
     const imAllowedTo = await contract.myPermissions();
-    setAllowed(imAllowedTo);
-    console.log(allowed);
+    console.log(imAllowedTo);
   }
 
   const getOwned = async () => {
@@ -28,12 +34,26 @@ function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
     const imOwnerOf = await contract.myProducts();
-    setOwned(imOwnerOf);
-    console.log(owned);
+    console.log(imOwnerOf);
   }
 
-  const requestAccount = async () => {
-    await window.ethereum.request({method: 'eth_requestAccounts'})
+  const addProduct = async () => {
+    if (!productName || !productDescription) {
+      alert("Input Feilds Cannot Be Empty");
+      return;
+    }
+
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
+      await contract.addProduct(productName, productDescription);
+      setProductName('');
+      setProductDescription('');
+      getAllowed();
+      getOwned();  
+    }
   }
 
   return (
@@ -58,6 +78,17 @@ function App() {
             </div>
           )
         })}
+      </div>
+      <div>
+        <input 
+          placeholder="Enter Name of Product"
+          onChange={(e) => setProductName(e.target.value)}
+        />
+        <input 
+          placeholder="Enter Description of Product"
+          onChange={(e) => setProductDescription(e.target.value)}
+        />
+        <button onClick={() => addProduct()}>Add Product</button>
       </div>
     </div>
   );
