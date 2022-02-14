@@ -30,6 +30,10 @@ module.exports = {
     ropsten: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [`0x${process.env.ROPSTEN_PRIVATE_KEY}`]
+    },
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts: [`0x${process.env.RINKEBY_PRIVATE_KEY}`]
     }
   }
 };

@@ -6,20 +6,24 @@ import './App.css';
 const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
 
 function App() {
+  const [userAccounts, setUserAccounts] = useState([]);
   const [allowed, setAllowed] = useState([]);
   const [owned, setOwned] = useState([]);
   const [productName, setProductName] = useState(''); 
   const [productDescription, setProductDescription] = useState('');
 
   useEffect(() => {
-    requestAccount();
-    getAllowed();
-    getOwned();
-    doIOwn(0);
+    requestAccount().then((response) => {
+      getAllowed();
+      getOwned();
+    });
   }, []);
 
   const requestAccount = async () => {
     await window.ethereum.request({method: 'eth_requestAccounts'})
+    .then((response) => {
+      setUserAccounts(response);
+    });
   }
 
   const getAllowed = async () => {
@@ -27,8 +31,8 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
       try {
-        await contract.myPermissions().then((result) => {
-          setAllowed([...allowed, result[0]]);
+        await contract.myPermissions(userAccounts[0]).then((result) => {
+          setAllowed(result);
         });
       } catch (error) {
         console.log(error);
@@ -41,8 +45,8 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
       try {
-        await contract.myProducts().then((result) => {
-          setOwned([...owned, result[0]]);
+        await contract.myProducts(userAccounts[0]).then((result) => {
+          setOwned(result);
         });
       } catch (error) {
         console.log(error);
@@ -54,8 +58,9 @@ function App() {
     if (typeof window.ethereum !== 'undefined') {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
+
       try {
-        await contract.checkOwner(productId).then((result) => console.log(result));
+        await contract.checkOwner(productId, userAccounts[0]).then((result) => console.log(result));
       } catch (error) {
         console.log(error);
       }
@@ -74,7 +79,7 @@ function App() {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
       console.log(contract);
-      const transaction = await contract.addProduct(productName, productDescription);
+      const transaction = await contract.addProduct(productName, userAccounts[0], productDescription);
       setProductName('');
       setProductDescription('');
       await transaction.wait();
@@ -88,7 +93,7 @@ function App() {
       <div className="my-allowed">
         <h2>Allowed</h2>
           {allowed.map((permission) => {
-            if (permission != null) {
+            if (permission !== null) {
               return (
                 <div className="my-allowed-item">
                   {permission[0]}
@@ -101,7 +106,7 @@ function App() {
       <div className="my-owned">
         <h2>Owned</h2>
         {owned.map((property) => {
-          if (property != null) {
+          if (property !== null) {
             return (
               <div className="my-owned-item">
                 {property[0]}

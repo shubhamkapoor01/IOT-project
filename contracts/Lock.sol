@@ -15,24 +15,24 @@ contract Lock is ERC721 {
 
     /*  creates a new product and appends it to list of global products along with information about 
         the product ie name, description, owner address and initially no one is allowed to use it. */
-    function addProduct(string memory name, string memory description) public {
+    function addProduct(string memory name, address userAccount, string memory description) public {
         address[] memory empty;
-        Product memory product = Product(name, description, msg.sender, empty, productIdCount);
-        _mint(msg.sender, productIdCount);
+        Product memory product = Product(name, description, userAccount, empty, productIdCount);
+        _mint(userAccount, productIdCount);
         productNft[productIdCount] = product;
-        productsOfPerson[msg.sender].push(productIdCount);
-        grantPermission(productIdCount, msg.sender);
+        productsOfPerson[userAccount].push(productIdCount);
+        grantPermission(productIdCount, userAccount, userAccount);
         productIdCount ++;
     }
 
     /*  creates a new product and appends it to list of global products along with information about 
         the product ie name, description, owner address and address of who all are allowed to use it. */
-    function addProductWithAllowed(string memory name, string memory description, address[] memory allowed) public {
-        Product memory product = Product(name, description, msg.sender, allowed, productIdCount);
-        _mint(msg.sender, productIdCount);
+    function addProductWithAllowed(string memory name, address userAccount, string memory description, address[] memory allowed) public {
+        Product memory product = Product(name, description, userAccount, allowed, productIdCount);
+        _mint(userAccount, productIdCount);
         productNft[productIdCount] = product;
-        productsOfPerson[msg.sender].push(productIdCount);
-        grantPermission(productIdCount, msg.sender);
+        productsOfPerson[userAccount].push(productIdCount);
+        grantPermission(productIdCount, userAccount, userAccount);
         for (uint i = 0; i < allowed.length; i ++) {
             allowedOfPerson[allowed[i]].push(productIdCount);
         }
@@ -40,9 +40,9 @@ contract Lock is ERC721 {
     }
 
     /* checks if the product with Id productId belongs to the user that has invoked the function */
-    function checkOwner(uint productId) public view returns (bool) {
+    function checkOwner(uint productId, address userToCheck) public view returns (bool) {
         address realOwner = productNft[productId].ownerAddress;
-        return realOwner == msg.sender;
+        return realOwner == userToCheck;
     }
     
     /* checks if a user has permission from the product owner to use a particular product */
@@ -56,28 +56,28 @@ contract Lock is ERC721 {
     }
 
     /* the user is allowed to view all the permissions they have been granted */
-    function myPermissions() public view returns (Product[] memory) {
-        Product[] memory iCanUse = new Product[](allowedOfPerson[msg.sender].length);
-        for (uint i = 0; i < allowedOfPerson[msg.sender].length; i ++) {
-            Product memory currProduct = productNft[allowedOfPerson[msg.sender][i]];
+    function myPermissions(address userAccount) public view returns (Product[] memory) {
+        Product[] memory iCanUse = new Product[](allowedOfPerson[userAccount].length);
+        for (uint i = 0; i < allowedOfPerson[userAccount].length; i ++) {
+            Product memory currProduct = productNft[allowedOfPerson[userAccount][i]];
             iCanUse[i] = currProduct;
         }
         return iCanUse;
     }
 
     /* the user is allowed to view all the products that they own */
-    function myProducts() public view returns (Product[] memory) {
-        Product[] memory iOwn = new Product[](productsOfPerson[msg.sender].length);
-        for (uint i = 0; i < productsOfPerson[msg.sender].length; i ++) {
-            Product memory currProduct = productNft[productsOfPerson[msg.sender][i]];
+    function myProducts(address userAccount) public view returns (Product[] memory) {
+        Product[] memory iOwn = new Product[](productsOfPerson[userAccount].length);
+        for (uint i = 0; i < productsOfPerson[userAccount].length; i ++) {
+            Product memory currProduct = productNft[productsOfPerson[userAccount][i]];
             iOwn[i] = currProduct;
         }
         return iOwn;
     }
 
     /* the owner is allowed to give usage rights of the product to another user */
-    function grantPermission(uint productId, address userToGrantPermission) public {
-        if (!checkOwner(productId)) {
+    function grantPermission(uint productId, address userAccount, address userToGrantPermission) public {
+        if (!checkOwner(productId, userAccount)) {
             return;
         }
 
@@ -86,8 +86,8 @@ contract Lock is ERC721 {
     }
 
     /* the owner is allowed to take back the usage rights of the product from user */
-    function revokePermission(uint productId, address userToRevokePermission) public {
-        if (!checkOwner(productId)) {
+    function revokePermission(uint productId, address userAccount, address userToRevokePermission) public {
+        if (!checkOwner(productId, userAccount)) {
             return;
         }
 
@@ -118,20 +118,20 @@ contract Lock is ERC721 {
         the new owner and previous owner will no longer have it, all users who had 
         access to the product under the old owner will keep their access unless the 
         new owner decides to modify it */
-    function transferOwnership(uint productId, address newOwner) public {
-        if (!checkOwner(productId)) {
+    function transferOwnership(uint productId, address oldOwner, address newOwner) public {
+        if (!checkOwner(productId, oldOwner)) {
             return;
         }
 
         bool belongsToOldOwner = false;
-        for (uint i = 0; i < productsOfPerson[msg.sender].length; i ++) {
-            if (productsOfPerson[msg.sender][i] == productId) {
+        for (uint i = 0; i < productsOfPerson[oldOwner].length; i ++) {
+            if (productsOfPerson[oldOwner][i] == productId) {
                 belongsToOldOwner = true;
-                while (i < productsOfPerson[msg.sender].length - 1) {
-                    productsOfPerson[msg.sender][i] = productsOfPerson[msg.sender][i + 1];
+                while (i < productsOfPerson[oldOwner].length - 1) {
+                    productsOfPerson[oldOwner][i] = productsOfPerson[oldOwner][i + 1];
                     i ++;
                 }
-                delete productsOfPerson[msg.sender][productsOfPerson[msg.sender].length - 1];
+                delete productsOfPerson[oldOwner][productsOfPerson[oldOwner].length - 1];
                 break;
             }
         }
@@ -142,7 +142,7 @@ contract Lock is ERC721 {
         productsOfPerson[newOwner].push(productId); 
 
         address previousOwner = ownerOf(productId);
-        _transfer(previousOwner, msg.sender, productId);
+        _transfer(previousOwner, oldOwner, productId);
     }
 }
 
