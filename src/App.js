@@ -14,10 +14,12 @@ function App() {
 
   useEffect(() => {
     requestAccount().then((response) => {
-      getAllowed();
-      getOwned();
+      if (userAccounts[0] !== undefined) {
+          getAllowed();
+          getOwned();
+      }
     });
-  }, []);
+  }, [userAccounts]);
 
   const requestAccount = async () => {
     await window.ethereum.request({method: 'eth_requestAccounts'})
