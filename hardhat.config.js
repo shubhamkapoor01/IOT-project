@@ -29,7 +29,7 @@ module.exports = {
     },
     ropsten: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [`${process.env.ROPSTEN_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.ROPSTEN_PRIVATE_KEY}`]
     }
   }
 };

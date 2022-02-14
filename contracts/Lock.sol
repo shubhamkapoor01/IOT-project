@@ -27,7 +27,7 @@ contract Lock is ERC721 {
 
     /*  creates a new product and appends it to list of global products along with information about 
         the product ie name, description, owner address and address of who all are allowed to use it. */
-    function addProduct(string memory name, string memory description, address[] memory allowed) public {
+    function addProductWithAllowed(string memory name, string memory description, address[] memory allowed) public {
         Product memory product = Product(name, description, msg.sender, allowed, productIdCount);
         _mint(msg.sender, productIdCount);
         productNft[productIdCount] = product;

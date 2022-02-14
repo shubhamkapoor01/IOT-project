@@ -18,11 +18,6 @@ function App() {
     doIOwn(0);
   }, []);
 
-  // useEffect(() => {
-  //   console.log(allowed);
-  //   console.log(owned);
-  // }, [allowed, owned]);
-
   const requestAccount = async () => {
     await window.ethereum.request({method: 'eth_requestAccounts'})
   }
@@ -93,18 +88,26 @@ function App() {
       <div className="my-allowed">
         <h2>Allowed</h2>
           {allowed.map((permission) => {
-            <div className="my-allowed">
-              {permission}
-            </div>
+            if (permission != null) {
+              return (
+                <div className="my-allowed-item">
+                  {permission[0]}
+                </div>
+              )
+            }
         })}
       </div>
 
       <div className="my-owned">
         <h2>Owned</h2>
         {owned.map((property) => {
-            <div className="my-owned">
-              {property}
-            </div>
+          if (property != null) {
+            return (
+              <div className="my-owned-item">
+                {property[0]}
+              </div>
+            )
+          }
         })}
       </div>
       <div>
