@@ -15,29 +15,59 @@ function App() {
     requestAccount();
     getAllowed();
     getOwned();
+    doIOwn(0);
   }, []);
+
+  // useEffect(() => {
+  //   console.log(allowed);
+  //   console.log(owned);
+  // }, [allowed, owned]);
 
   const requestAccount = async () => {
     await window.ethereum.request({method: 'eth_requestAccounts'})
   }
 
   const getAllowed = async () => {
-    const [account] = await window.ethereum.request({method: 'eth_requestAccounts'});
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
-    const imAllowedTo = await contract.myPermissions();
-    console.log(imAllowedTo);
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
+      try {
+        await contract.myPermissions().then((result) => {
+          setAllowed([...allowed, result[0]]);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 
   const getOwned = async () => {
-    const [account] = await window.ethereum.request({method: 'eth_requestAccounts'});
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
-    const imOwnerOf = await contract.myProducts();
-    console.log(imOwnerOf);
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
+      try {
+        await contract.myProducts().then((result) => {
+          setOwned([...owned, result[0]]);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 
-  const addProduct = async () => {
+  const doIOwn = async (productId) => {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
+      try {
+        await contract.checkOwner(productId).then((result) => console.log(result));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  const createProduct = async () => {
     if (!productName || !productDescription) {
       alert("Input Feilds Cannot Be Empty");
       return;
@@ -48,9 +78,11 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
-      await contract.addProduct(productName, productDescription);
+      console.log(contract);
+      const transaction = await contract.addProduct(productName, productDescription);
       setProductName('');
       setProductDescription('');
+      await transaction.wait();
       getAllowed();
       getOwned();  
     }
@@ -61,22 +93,18 @@ function App() {
       <div className="my-allowed">
         <h2>Allowed</h2>
           {allowed.map((permission) => {
-          return (
             <div className="my-allowed">
               {permission}
             </div>
-          )
         })}
       </div>
 
       <div className="my-owned">
         <h2>Owned</h2>
         {owned.map((property) => {
-          return (
             <div className="my-owned">
               {property}
             </div>
-          )
         })}
       </div>
       <div>
@@ -88,7 +116,7 @@ function App() {
           placeholder="Enter Description of Product"
           onChange={(e) => setProductDescription(e.target.value)}
         />
-        <button onClick={() => addProduct()}>Add Product</button>
+        <button onClick={() => createProduct()}>Add Product</button>
       </div>
     </div>
   );

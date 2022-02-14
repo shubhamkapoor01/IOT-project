@@ -20,9 +20,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 module.exports = {
   solidity: "0.8.4",
+  paths: {
+    artifacts: './client/src/artifacts'
+  },
   networks: {
+    hardhat: {
+      chainId: 1337
+    },
     ropsten: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+      url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [`${process.env.ROPSTEN_PRIVATE_KEY}`]
     }
   }
