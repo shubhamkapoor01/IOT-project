@@ -8,8 +8,10 @@ const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
 function App() {
   const [userAccounts, setUserAccounts] = useState([]);
   const [allowed, setAllowed] = useState([]);
+  const [addressToGrant, setAddressToGrant] = useState('');
   const [owned, setOwned] = useState([]);
   const [productName, setProductName] = useState(''); 
+  const [productId, setProductId] = useState('');
   const [productDescription, setProductDescription] = useState('');
 
   useEffect(() => {
@@ -69,8 +71,6 @@ function App() {
     }
   }
 
-
-
   const createProduct = async () => {
     if (!productName || !productDescription) {
       alert("Input Feilds Cannot Be Empty");
@@ -82,13 +82,30 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
-      console.log(contract);
       const transaction = await contract.addProduct(productName, userAccounts[0], productDescription);
       setProductName('');
       setProductDescription('');
       await transaction.wait();
       getAllowed();
       getOwned();  
+    }
+  }
+
+  const grantPermission = async () => {
+    if (!addressToGrant || !productId) {
+      alert("Input Feilds Cannot Be Empty");
+      return;
+    }
+
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
+      const transaction = await contract.grantPermission(productId, userAccounts[0], addressToGrant);
+      setProductName('');
+      setProductDescription('');
+      await transaction.wait()
     }
   }
 
@@ -119,16 +136,27 @@ function App() {
           }
         })}
       </div>
-      <div>
+      <div className="add-product">
         <input 
-          placeholder="Enter Name of Product"
+          placeholder="Enter Room Name"
           onChange={(e) => setProductName(e.target.value)}
         />
         <input 
-          placeholder="Enter Description of Product"
+          placeholder="Enter Room Description"
           onChange={(e) => setProductDescription(e.target.value)}
         />
         <button onClick={() => createProduct()}>Add Product</button>
+      </div>
+      <div className="grant-permission">
+        <input 
+          placeholder="Enter Room ID"
+          onChange={(e) => setProductId(e.target.value)}
+        />
+        <input
+          placeholder="Enter Wallet Address of user to grant permission"
+          onChange={(e) => setAddressToGrant(e.target.value)}
+        />
+        <button onClick={() => grantPermission()}>Grant Permission</button>
       </div>
     </div>
   );
