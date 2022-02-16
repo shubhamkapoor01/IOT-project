@@ -90,25 +90,19 @@ contract Lock is ERC721 {
         if (!checkOwner(productId, userAccount)) {
             return;
         }
-
+        
         for (uint i = 0; i < productNft[productId].allowedToUse.length; i ++) {
             if (userToRevokePermission == productNft[productId].allowedToUse[i]) {
-                while (i < productNft[productId].allowedToUse.length - 1) {
-                    productNft[productId].allowedToUse[i] = productNft[productId].allowedToUse[i + 1];
-                    i ++;
-                }
-                delete productNft[productId].allowedToUse[productNft[productId].allowedToUse.length - 1];
+                productNft[productId].allowedToUse[i] = productNft[productId].allowedToUse[productNft[productId].allowedToUse.length - 1];
+                productNft[productId].allowedToUse.pop();
                 break;
             }
         }
 
         for (uint i = 0; i < allowedOfPerson[userToRevokePermission].length; i ++) {
             if (productId == allowedOfPerson[userToRevokePermission][i]) {
-                while (i < allowedOfPerson[userToRevokePermission].length - 1) {
-                    allowedOfPerson[userToRevokePermission][i] = allowedOfPerson[userToRevokePermission][i + 1];
-                    i ++;
-                }
-                delete allowedOfPerson[userToRevokePermission][allowedOfPerson[userToRevokePermission].length - 1];
+                allowedOfPerson[userToRevokePermission][i] = allowedOfPerson[userToRevokePermission][allowedOfPerson[userToRevokePermission].length - 1];
+                allowedOfPerson[userToRevokePermission].pop();
                 break;
             }
         }
@@ -122,8 +116,10 @@ contract Lock is ERC721 {
         if (!checkOwner(productId, oldOwner)) {
             return;
         }
-
+        
+        grantPermission(productId, oldOwner, newOwner);
         bool belongsToOldOwner = false;
+
         for (uint i = 0; i < productsOfPerson[oldOwner].length; i ++) {
             if (productsOfPerson[oldOwner][i] == productId) {
                 belongsToOldOwner = true;
@@ -135,7 +131,7 @@ contract Lock is ERC721 {
                 break;
             }
         }
-
+    
         if (!belongsToOldOwner) {
             return;
         }
