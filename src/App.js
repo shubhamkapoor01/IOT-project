@@ -8,11 +8,13 @@ const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
 function App() {
   const [userAccounts, setUserAccounts] = useState([]);
   const [allowed, setAllowed] = useState([]);
-  const [addressToGrant, setAddressToGrant] = useState('');
   const [owned, setOwned] = useState([]);
   const [productName, setProductName] = useState(''); 
-  const [productId, setProductId] = useState('');
   const [productDescription, setProductDescription] = useState('');
+  const [addressToGrant, setAddressToGrant] = useState('');
+  const [productIdToGrant, setProductIdToGrant] = useState('');
+  const [addressToRevoke, setAddressToRevoke] = useState('');
+  const [productIdToRevoke, setProductIdToRevoke] = useState('');
 
   useEffect(() => {
     requestAccount().then((response) => {
@@ -92,7 +94,7 @@ function App() {
   }
 
   const grantPermission = async () => {
-    if (!addressToGrant || !productId) {
+    if (!addressToGrant || !productIdToGrant) {
       alert("Input Feilds Cannot Be Empty");
       return;
     }
@@ -102,10 +104,32 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
-      const transaction = await contract.grantPermission(productId, userAccounts[0], addressToGrant);
+      const transaction = await contract.grantPermission(productIdToGrant, userAccounts[0], addressToGrant);
       setProductName('');
       setProductDescription('');
       await transaction.wait()
+      setAddressToGrant('');
+      setProductIdToGrant('');
+    }
+  }
+
+  const revokePermission = async () => {
+    if (!addressToRevoke || !productIdToRevoke) {
+      alert("Input Feilds Cannot Be Empty");
+      return;
+    }
+
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
+      const transaction = await contract.revokePermission(productIdToRevoke, userAccounts[0], addressToRevoke);
+      setProductName('');
+      setProductDescription('');
+      await transaction.wait()
+      setAddressToRevoke('');
+      setProductIdToRevoke('');
     }
   }
 
@@ -149,14 +173,25 @@ function App() {
       </div>
       <div className="grant-permission">
         <input 
-          placeholder="Enter Room ID"
-          onChange={(e) => setProductId(e.target.value)}
+          placeholder="Enter Room ID of which Permission is to be Granted"
+          onChange={(e) => setProductIdToGrant(e.target.value)}
         />
         <input
           placeholder="Enter Wallet Address of user to grant permission"
           onChange={(e) => setAddressToGrant(e.target.value)}
         />
         <button onClick={() => grantPermission()}>Grant Permission</button>
+      </div>
+      <div className="revoke-permission">
+        <input 
+          placeholder="Enter Room ID of which Permission is to be Revoked"
+          onChange={(e) => setProductIdToRevoke(e.target.value)}
+        />
+        <input
+          placeholder="Enter Wallet Address of user to Revoke permission"
+          onChange={(e) => setAddressToRevoke(e.target.value)}
+        />
+        <button onClick={() => revokePermission()}>Revoke Permission</button>
       </div>
     </div>
   );
