@@ -15,6 +15,8 @@ function App() {
   const [productIdToGrant, setProductIdToGrant] = useState('');
   const [addressToRevoke, setAddressToRevoke] = useState('');
   const [productIdToRevoke, setProductIdToRevoke] = useState('');
+  const [addressToTransfer, setAddressToTransfer] = useState('');
+  const [productIdToTransfer, setProductIdToTransfer] = useState('');
 
   useEffect(() => {
     requestAccount().then((response) => {
@@ -133,6 +135,26 @@ function App() {
     }
   }
 
+  const transferOwnership = async () => {
+    if (!addressToTransfer || !productIdToTransfer) {
+      alert("Input Feilds Cannot Be Empty");
+      return;
+    }
+
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(lockAddress, Lock.abi, signer);
+      const transaction = await contract.transferOwnership(productIdToTransfer, userAccounts[0], addressToTransfer);
+      setProductName('');
+      setProductDescription('');
+      await transaction.wait()
+      setAddressToTransfer('');
+      setProductIdToTransfer('');
+    }
+  }
+
   return (
     <div className="app">
       <div className="my-allowed">
@@ -192,6 +214,17 @@ function App() {
           onChange={(e) => setAddressToRevoke(e.target.value)}
         />
         <button onClick={() => revokePermission()}>Revoke Permission</button>
+      </div>
+      <div className="transfer-ownership">
+        <input 
+          placeholder="Enter Room ID of which Ownership is to be Transfered"
+          onChange={(e) => setProductIdToTransfer(e.target.value)}
+        />
+        <input
+          placeholder="Enter Wallet Address of user to Transfer Ownership"
+          onChange={(e) => setAddressToTransfer(e.target.value)}
+        />
+        <button onClick={() => transferOwnership()}>Transfer Ownership</button>
       </div>
     </div>
   );

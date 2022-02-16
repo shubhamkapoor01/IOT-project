@@ -123,20 +123,35 @@ contract Lock is ERC721 {
         for (uint i = 0; i < productsOfPerson[oldOwner].length; i ++) {
             if (productsOfPerson[oldOwner][i] == productId) {
                 belongsToOldOwner = true;
-                while (i < productsOfPerson[oldOwner].length - 1) {
-                    productsOfPerson[oldOwner][i] = productsOfPerson[oldOwner][i + 1];
-                    i ++;
-                }
-                delete productsOfPerson[oldOwner][productsOfPerson[oldOwner].length - 1];
+                productsOfPerson[oldOwner][i] = productsOfPerson[oldOwner][productsOfPerson[oldOwner].length - 1];
+                productsOfPerson[oldOwner].pop();
                 break;
             }
         }
-    
+
         if (!belongsToOldOwner) {
             return;
         }
-        productsOfPerson[newOwner].push(productId); 
 
+        address userToRevokePermission = oldOwner;
+
+        for (uint i = 0; i < productNft[productId].allowedToUse.length; i ++) {
+            if (userToRevokePermission == productNft[productId].allowedToUse[i]) {
+                productNft[productId].allowedToUse[i] = productNft[productId].allowedToUse[productNft[productId].allowedToUse.length - 1];
+                productNft[productId].allowedToUse.pop();
+                break;
+            }
+        }
+
+        for (uint i = 0; i < allowedOfPerson[userToRevokePermission].length; i ++) {
+            if (productId == allowedOfPerson[userToRevokePermission][i]) {
+                allowedOfPerson[userToRevokePermission][i] = allowedOfPerson[userToRevokePermission][allowedOfPerson[userToRevokePermission].length - 1];
+                allowedOfPerson[userToRevokePermission].pop();
+                break;
+            }
+        }
+
+        productsOfPerson[newOwner].push(productId); 
         address previousOwner = ownerOf(productId);
         _transfer(previousOwner, oldOwner, productId);
     }
