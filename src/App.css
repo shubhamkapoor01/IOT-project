@@ -2,3 +2,9 @@
   width: 60%;
   margin: auto;
 }
+
+.my-owned-item {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
