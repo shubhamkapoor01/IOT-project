@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import Lock from './artifacts/contracts/Lock.sol/Lock.json';
+import QRCode from 'react-qr-code'
 import './App.css';
 
 const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
@@ -169,7 +170,6 @@ function App() {
             }
         })}
       </div>
-
       <div className="my-owned">
         <h2>Owned</h2>
         {owned.map((property) => {
@@ -177,6 +177,9 @@ function App() {
             return (
               <div className="my-owned-item">
                 {property[0]}
+                <QRCode 
+                  value={`${window.location.href}/requesting-access/${property[4]}`}
+                />
               </div>
             )
           }
@@ -191,7 +194,7 @@ function App() {
           placeholder="Enter Room Description"
           onChange={(e) => setProductDescription(e.target.value)}
         />
-        <button onClick={() => createProduct()}>Add Product</button>
+        <button onClick={() => createProduct()}>Add New Room</button>
       </div>
       <div className="grant-permission">
         <input 
