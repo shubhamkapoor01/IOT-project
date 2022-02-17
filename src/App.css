@@ -3,8 +3,11 @@
   margin: auto;
 }
 
-.my-owned-item {
+.app {
   margin: 10px;
+}
+
+.my-owned-item {
   display: flex;
   flex-direction: column;
 }
