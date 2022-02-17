@@ -2,6 +2,9 @@
   "name": "iot_project",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "17.4.0"
+  },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@nomiclabs/hardhat-ethers": "^2.0.4",
