@@ -185,7 +185,7 @@ function App() {
           }
         })}
       </div>
-      <div className="add-product">
+      <div className="add-new-room">
         <input 
           placeholder="Enter Room Name"
           onChange={(e) => setProductName(e.target.value)}
