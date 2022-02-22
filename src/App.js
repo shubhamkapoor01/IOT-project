@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import Lock from './artifacts/contracts/Lock.sol/Lock.json';
 import QRCode from 'react-qr-code'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import RequestingAccess from './RequestingAccess.js';
 import './App.css';
 
 const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
@@ -159,7 +157,6 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
         <div className="app">
           <div className="my-allowed">
             <h2>Allowed</h2>
@@ -181,7 +178,7 @@ function App() {
                   <div className="my-owned-item">
                     {property[0]}
                     <QRCode 
-                      value={`${window.location.href}requesting-access/${property[4]}`}
+                      value={`https://access-verification-system.herokuapp.com/requesting-access/${property[4]}`}
                     />
                   </div>
                 )
@@ -233,10 +230,6 @@ function App() {
             <button onClick={() => transferOwnership()}>Transfer Ownership</button>
           </div>
         </div>
-      <Routes>
-        <Route path="/requesting-access/:roomId" element={ <RequestingAccess userAccounts={userAccounts} /> } />
-      </Routes>
-    </BrowserRouter>
   );
 }
 
