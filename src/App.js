@@ -160,9 +160,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="//requesting-access/:roomId" element={ <RequestingAccess userAccounts={userAccounts} /> } />
-      </Routes>
         <div className="app">
           <div className="my-allowed">
             <h2>Allowed</h2>
@@ -236,6 +233,9 @@ function App() {
             <button onClick={() => transferOwnership()}>Transfer Ownership</button>
           </div>
         </div>
+      <Routes>
+        <Route path="/requesting-access/:roomId" element={ <RequestingAccess userAccounts={userAccounts} /> } />
+      </Routes>
     </BrowserRouter>
   );
 }
