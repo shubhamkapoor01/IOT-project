@@ -22,7 +22,6 @@ function RequestingAccess() {
 			const provider = new ethers.providers.Web3Provider(window.ethereum);
 			const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
 			try {
-				console.log(roomId, userAccounts[0]);
 				await contract.isAllowed(roomId, userAccounts[0]).then((result) => {
 					result ? setHasAccess(1) : setHasAccess(2);
 				});
