@@ -44,7 +44,14 @@ function RequestingAccess(props) {
 	return (
 		<div>
 			{hasAccess === 0 ? (
-				<div>Loading...</div>
+				<div>
+					<div>Loading...</div>
+					{userAccounts[0] === undefined ? (
+						 <div>Account not connected</div>
+					) : (
+						 <div>Account connected</div>
+					)}
+				</div>
 			) : (
 				hasAccess === 1 ? (
 					<div>ACCESS GRANTED</div>
@@ -57,3 +64,4 @@ function RequestingAccess(props) {
 }
 
 export default RequestingAccess;
+
