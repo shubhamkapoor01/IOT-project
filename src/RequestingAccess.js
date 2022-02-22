@@ -4,25 +4,25 @@ import { ethers } from 'ethers';
 
 const lockAddress = process.env.REACT_APP_CONTRACT_LOCK_ADDRESS;
 
-function RequestingAccess() {
+function RequestingAccess(props) {
 	const [hasAccess, setHasAccess] = useState(0);
 	const [userAccounts, setUserAccounts] = useState([]);
 
-	const requestAccount = async () => {
+  const requestAccount = async () => {
     await window.ethereum.request({method: 'eth_requestAccounts'})
     .then((response) => {
       setUserAccounts(response);
     });
-	}
+  }
 
-	const showAllowed = async () => {
+	const showAllowed = async (userToCheckAllowed) => {
 		if (typeof window.ethereum !== 'undefined') {
 			const url = window.location.href;
 			const roomId = url.substring(url.lastIndexOf('/') + 1);
 			const provider = new ethers.providers.Web3Provider(window.ethereum);
 			const contract = new ethers.Contract(lockAddress, Lock.abi, provider);
 			try {
-				await contract.isAllowed(roomId, userAccounts[0]).then((result) => {
+				await contract.isAllowed(roomId, userToCheckAllowed).then((result) => {
 					result ? setHasAccess(1) : setHasAccess(2);
 				});
 			} catch (error) {
@@ -32,19 +32,21 @@ function RequestingAccess() {
 	}
 
 	useEffect(() => {
-		requestAccount().then((response) => {
-      if (userAccounts[0] !== undefined) {
-        showAllowed();
-      }
-    })
+		if (props.userAccounts[0] !== undefined) {
+			showAllowed(props.userAccounts[0]);
+		} else {
+			requestAccount().then(() => {
+				showAllowed(userAccounts[0]);
+			});
+		}
 	}, [userAccounts]);
 
 	return (
 		<div>
-			{hasAccess == 0 ? (
+			{hasAccess === 0 ? (
 				<div>Loading...</div>
 			) : (
-				hasAccess == 1 ? (
+				hasAccess === 1 ? (
 					<div>ACCESS GRANTED</div>
 				) : (
 					<div>ACCESS DENIED</div>
