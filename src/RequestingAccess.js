@@ -28,7 +28,7 @@ function RequestingAccess(props) {
 			} catch (error) {
 				console.log(error);
 			}
-		}
+		} 
 	}
 
 	useEffect(() => {
@@ -36,7 +36,7 @@ function RequestingAccess(props) {
 			showAllowed(props.userAccounts[0]);
 		} else {
 			requestAccount().then(() => {
-				showAllowed(userAccounts[0]);
+				showAllowed(userAccounts[0]).then(alert(userAccounts[0]));
 			});
 		}
 	}, [userAccounts]);
