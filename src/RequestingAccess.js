@@ -39,7 +39,7 @@ function RequestingAccess(props) {
 				showAllowed(userAccounts[0]).then(alert(userAccounts[0]));
 			});
 		}
-	}, [userAccounts]);
+	}, [userAccounts, props.userAccounts]);
 
 	return (
 		<div>
@@ -64,4 +64,3 @@ function RequestingAccess(props) {
 }
 
 export default RequestingAccess;
-
