@@ -1,0 +1,13 @@
+.qr-scanner {
+  width: 60%;
+  margin: auto;
+}
+
+.app {
+  margin: 10px;
+}
+
+.my-owned-item {
+  display: flex;
+  flex-direction: column;
+}
