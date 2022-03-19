@@ -79,7 +79,7 @@ export default function Ownedrooms() {
               >
                 <h2>{property[0]}</h2>
                 <QRCode
-                  value={`http://access-verification-system.herokuapp.com/requesting-access/${property[4]}`}
+                  value={`https://access-verification-system.herokuapp.com/requesting-access/${property[4]}`}
                 />
               </div>
             );
