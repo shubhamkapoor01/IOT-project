@@ -81,52 +81,89 @@ export default function MyRooms() {
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
         }}
       >
-        <Form>
-          <Form.Group>
-            <Form.Label>Roomname</Form.Label>
-            <Form.Control
-              onChange={(e) => setProductName(e.target.value)}
-              type="text"
-              placeholder="Enter Roomname"
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              onChange={(e) => setProductDescription(e.target.value)}
-              type="text"
-              placeholder="Enter Room description"
-            />
-          </Form.Group>
+        <div
+          style={{
+            display: "flex",
+            felx: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "50%",
+            marginTop: "10%",
+          }}
+        >
+          <Form>
+            <Form.Group>
+              <Form.Label>Roomname</Form.Label>
+              <Form.Control
+                onChange={(e) => setProductName(e.target.value)}
+                type="text"
+                placeholder="Enter Roomname"
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                onChange={(e) => setProductDescription(e.target.value)}
+                type="text"
+                placeholder="Enter Room description"
+              />
+            </Form.Group>
+            <div
+              style={{
+                marginTop: "10px",
+              }}
+            >
+              <Button variant="primary" onClick={() => createProduct()}>
+                Create Room
+              </Button>
+            </div>
+          </Form>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "10px",
+            flexDirection: "column",
+            width: "50%",
+          }}
+        >
+          <h2>Your rooms</h2>
           <div
             style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               marginTop: "10px",
             }}
           >
-            <Button variant="primary" onClick={() => createProduct()}>
-              Create Room
-            </Button>
+            {allowed.map((permission, index) => {
+              if (permission !== null) {
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: "10px",
+                      backgroundColor: "lightblue",
+                      borderRadius: "5px",
+                      width: "150px",
+                      height: "100px",
+                      marginRight: "10px",
+                    }}
+                  >
+                    {permission[0]}
+                  </div>
+                );
+              }
+            })}
           </div>
-        </Form>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "10px",
-        }}
-      >
-        <h2>Your rooms</h2>
-        {allowed.map((permission, index) => {
-          if (permission !== null) {
-            return <div>{permission[0]}</div>;
-          }
-        })}
+        </div>
       </div>
     </div>
   );

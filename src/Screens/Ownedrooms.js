@@ -47,44 +47,44 @@ export default function Ownedrooms() {
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           flexDirection: "column",
-        }}
-      ></div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
           alignItems: "center",
-          marginTop: "10px",
-          flexDirection: "column",
         }}
       >
         <h2>Rooms owned by you</h2>
-
-        {owned.map((property) => {
-          if (property !== null) {
-            return (
-              <div
-                className="my-owned-item"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderWidth: "3px",
-                  borderStyle: "solid",
-                  borderRadius: "5px",
-                }}
-              >
-                <h2>{property[0]}</h2>
-                <QRCode
-                  value={`https://access-verification-system.herokuapp.com/requesting-access/${property[4]}`}
-                />
-              </div>
-            );
-          }
-        })}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "10px",
+          }}
+        >
+          {owned.map((property) => {
+            if (property !== null) {
+              return (
+                <div
+                  className="my-owned-item"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderWidth: "3px",
+                    borderStyle: "solid",
+                    marginRight: "50px",
+                    marginLeft: "50px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <h2>{property[0]}</h2>
+                  <QRCode
+                    value={`https://access-verification-system.herokuapp.com/requesting-access/${property[4]}`}
+                  />
+                </div>
+              );
+            }
+          })}
+        </div>
       </div>
     </div>
   );
