@@ -17,7 +17,7 @@ export default function Header() {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      <Navbar.Brand href="App.js">Dashboard</Navbar.Brand>
+      <Navbar.Brand href="/">Dashboard</Navbar.Brand>
     </Navbar>
   );
 }
