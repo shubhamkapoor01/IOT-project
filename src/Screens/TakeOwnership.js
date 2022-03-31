@@ -56,9 +56,9 @@ export default function TakeOwnership() {
               onChange={(e) => setProductIdToTransfer(e.target.value)}
               type="text"
               style={{
-                width:"400px"
+                width: "400px",
               }}
-              placeholder="Enter Room ID of which Permission is to be Revoked"
+              placeholder="Enter Wallet Address of user to Transfered Ownership"
             />
           </Form.Group>
           <Form.Group>
@@ -66,7 +66,7 @@ export default function TakeOwnership() {
             <Form.Control
               onChange={(e) => setAddressToTransfer(e.target.value)}
               type="text"
-              placeholder="Enter Wallet Address of user to Revoke permission"
+              placeholder="Enter Room ID of which Permission is to be Revoked"
             />
           </Form.Group>
           <div

@@ -57,7 +57,7 @@ export default function RevokePermission() {
               onChange={(e) => setProductIdToRevoke(e.target.value)}
               type="text"
               style={{
-                width:"400px"
+                width: "400px",
               }}
               placeholder="Enter Room ID of which Permission is to be Transfered"
             />
@@ -67,7 +67,7 @@ export default function RevokePermission() {
             <Form.Control
               onChange={(e) => setAddressToRevoke(e.target.value)}
               type="text"
-              placeholder="Enter Wallet Address of user to Transfered Ownership"
+              placeholder="Enter Wallet Address of user to Revoke permission"
             />
           </Form.Group>
           <div
