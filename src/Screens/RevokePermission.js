@@ -59,7 +59,7 @@ export default function RevokePermission() {
               style={{
                 width: "400px",
               }}
-              placeholder="Enter Room ID of which Permission is to be Transfered"
+              placeholder="Enter Room ID of which Permission is to be Revoked"
             />
           </Form.Group>
           <Form.Group>
